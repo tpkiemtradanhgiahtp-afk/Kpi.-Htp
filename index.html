@@ -6291,7 +6291,14 @@ function esClear(uid){if(!D.eval.monthSetup[CM])D.eval.monthSetup[CM]={};D.eval.
 //  II. ĐÁNH GIÁ — CHẤM ĐIỂM
 // ============================================================
 function getMonthCriteria(uid,type){const bank=getUnitBank(uid);const ids=(D.eval.monthSetup[CM]||{})[uid]||bank.map(x=>x.id);return bank.filter(x=>ids.includes(x.id)&&(!type||x.type===type))}
+function deleteEvalScore(id){
+  if(!U||!(U.username==='duongld'||U.username==='kpi')){toast('Chỉ tài khoản duongld và kpi mới được xóa phiếu chấm điểm','ng');return;}
+  if(!confirm('Xóa phiếu chấm điểm này? Hành động không thể hoàn tác.'))return;
+  D.eval.scores=D.eval.scores.filter(x=>x.id!==id);
+  sv();toast('Đã xóa phiếu chấm điểm','ok');R();
+}
 function rEScore(c){
+  const _canDel=U&&(U.username==='duongld'||U.username==='kpi');
   c.innerHTML=`<div class="fi"><div style="margin-bottom:14px"><button class="btn btn-s btn-o" onclick="nav('evalHub')"><i class="fas fa-arrow-left"></i> Quay lại Kiểm tra & Đánh giá</button></div><div class="cd"><div class="ch"><h3><i class="fas fa-star-half-alt" style="color:var(--wn)"></i> Chấm điểm theo tiêu chí tháng ${CM}</h3></div>
   <div class="cb">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
@@ -6311,7 +6318,10 @@ function rEScore(c){
         <td>${penCount>0?`<span style="color:var(--ng);font-size:12px"><i class="fas fa-exclamation-triangle"></i> ${penCount}</span>`:'<span style="color:var(--t3);font-size:12px">—</span>'}</td>
         <td>${e.photos&&Object.keys(e.photos).length?`<span style="color:var(--ok);font-size:12px"><i class="fas fa-images"></i> ${Object.keys(e.photos).length}</span>`:'<span style="color:var(--t3);font-size:12px">—</span>'}</td>
         <td><span class="badge ${e.result==='pass'?'ok':'ng'}">${e.result==='pass'?'Đạt':'Chưa đạt'}</span></td>
-        <td><button class="btn btn-x" style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;white-space:nowrap" onclick="exportScorePDF('${e.id}')" title="Xuất biên bản PDF"><i class="fas fa-file-pdf"></i> PDF</button></td>
+        <td style="white-space:nowrap;display:flex;align-items:center;gap:5px">
+          <button class="btn btn-x" style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;white-space:nowrap" onclick="exportScorePDF('${e.id}')" title="Xuất biên bản PDF"><i class="fas fa-file-pdf"></i> PDF</button>
+          ${_canDel?`<button class="btn btn-x btn-ng" onclick="deleteEvalScore('${e.id}')" title="Xóa phiếu này" style="padding:5px 8px"><i class="fas fa-trash"></i></button>`:''}
+        </td>
       </tr>`;}).join('')}
   </tbody></table>`:'<div class="empty" style="padding:14px"><p>Chưa có</p></div>'}</div></div></div>`}
 
